@@ -57,7 +57,29 @@ function validate(f: Form, fulfillment: Fulfillment): Errors {
   return e;
 }
 
-export function Checkout() {
+/** Link de saída do checkout: vira botão quando o checkout está sobreposto à página (modo página única). */
+function ExitLink({ to, onExit, className, onClick, children }: { to: string; onExit?: (hash?: string) => void; className: string; onClick?: () => void; children: React.ReactNode }) {
+  if (onExit)
+    return (
+      <button
+        type="button"
+        className={`cursor-pointer ${className}`}
+        onClick={() => {
+          onClick?.();
+          onExit(to.split("#")[1]);
+        }}
+      >
+        {children}
+      </button>
+    );
+  return (
+    <Link href={to} className={className} onClick={onClick}>
+      {children}
+    </Link>
+  );
+}
+
+export function Checkout({ onExit }: { onExit?: (hash?: string) => void } = {}) {
   const { lines } = useCart();
   const [fulfillment, setFulfillment] = useState<Fulfillment>("delivery");
   const [form, setForm] = useState<Form>(empty);
@@ -123,13 +145,13 @@ export function Checkout() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (!lines.length && !sent) return <EmptyState />;
+  if (!lines.length && !sent) return <EmptyState onExit={onExit} />;
 
   return (
     <div className="mx-auto max-w-[1400px] px-[var(--gutter)] pb-24 pt-[calc(var(--nav-h)+3rem)] md:pb-36 md:pt-[calc(var(--nav-h)+5rem)]">
       <AnimatePresence mode="wait" initial={false}>
         {sent ? (
-          <Sent key="sent" message={sent} />
+          <Sent key="sent" message={sent} onExit={onExit} />
         ) : (
           <m.div key="form" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }} transition={{ duration: 0.4 }}>
             <h1 className="display text-[clamp(3rem,8vw,7rem)]">Finalizar pedido</h1>
@@ -247,7 +269,7 @@ export function Checkout() {
                 )}
 
                 <div className="lg:hidden">
-                  <Summary fulfillment={fulfillment} />
+                  <Summary fulfillment={fulfillment} onExit={onExit} />
                 </div>
 
                 <div>
@@ -261,7 +283,7 @@ export function Checkout() {
 
               <aside className="hidden lg:col-span-5 lg:block">
                 <div className="sticky top-[calc(var(--nav-h)+1.5rem)]">
-                  <Summary fulfillment={fulfillment} />
+                  <Summary fulfillment={fulfillment} onExit={onExit} />
                 </div>
               </aside>
             </div>
@@ -364,7 +386,7 @@ function Field({ name, label, value, onChange, error, hint, optional, className 
   );
 }
 
-function Summary({ fulfillment }: { fulfillment: Fulfillment }) {
+function Summary({ fulfillment, onExit }: { fulfillment: Fulfillment; onExit?: (hash?: string) => void }) {
   const { lines } = useCart();
   const fee = deliveryFee(fulfillment);
   return (
@@ -411,14 +433,14 @@ function Summary({ fulfillment }: { fulfillment: Fulfillment }) {
           <dd className="font-display text-[2.2rem] tabular-nums">{money(orderTotal(lines, fulfillment))}</dd>
         </div>
       </dl>
-      <Link href="/#cardapio" className="mt-4 inline-block text-sm text-farinha/70 underline underline-offset-4 hover:text-farinha">
+      <ExitLink to="/#cardapio" onExit={onExit} className="mt-4 inline-block text-sm text-farinha/70 underline underline-offset-4 hover:text-farinha">
         Adicionar mais itens
-      </Link>
+      </ExitLink>
     </section>
   );
 }
 
-function Sent({ message }: { message: string }) {
+function Sent({ message, onExit }: { message: string; onExit?: (hash?: string) => void }) {
   return (
     <m.div key="sent" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: [0.22, 0.61, 0.36, 1] }} className="max-w-3xl" role="status">
       <m.div
@@ -429,9 +451,9 @@ function Sent({ message }: { message: string }) {
       >
         <Check className="h-8 w-8" strokeWidth={2.5} aria-hidden />
       </m.div>
-      <h1 className="display mt-8 text-[clamp(2.8rem,7vw,6rem)]">Seu pedido está no WhatsApp</h1>
+      <h1 className="display mt-8 text-[clamp(2.8rem,7vw,6rem)]">Seu pedido está pronto</h1>
       <p className="mt-6 max-w-[52ch] text-lg text-cenere">
-        Abrimos uma conversa com a mensagem pronta. Toque em enviar por lá para confirmar; a gente responde com o tempo de preparo.
+        A mensagem com o pedido já está escrita. Se o WhatsApp não abriu sozinho, toque no botão abaixo e envie a mensagem por lá; a gente responde com o tempo de preparo.
       </p>
       <div className="mt-10 flex flex-wrap gap-3">
         <a
@@ -441,16 +463,17 @@ function Sent({ message }: { message: string }) {
           className="inline-flex h-14 items-center gap-2.5 rounded-full bg-brasa px-7 font-medium text-farinha transition-colors hover:bg-pomodoro"
         >
           <WhatsAppIcon className="h-5 w-5" />
-          Abrir o WhatsApp de novo
+          Abrir o WhatsApp
           <ExternalLink className="h-4 w-4 opacity-70" aria-hidden />
         </a>
-        <Link
-          href="/"
+        <ExitLink
+          to="/#inicio"
+          onExit={onExit}
           onClick={() => clearCart()}
           className="inline-flex h-14 items-center rounded-full border border-forno/25 px-7 transition-colors hover:border-forno"
         >
           Já enviei, limpar pedido
-        </Link>
+        </ExitLink>
       </div>
       <details className="mt-12 rounded-2xl bg-farinha-2 p-5">
         <summary className="cursor-pointer font-medium">Ver a mensagem enviada</summary>
@@ -460,15 +483,15 @@ function Sent({ message }: { message: string }) {
   );
 }
 
-function EmptyState() {
+function EmptyState({ onExit }: { onExit?: (hash?: string) => void }) {
   return (
     <div className="mx-auto flex min-h-[80svh] max-w-[1400px] flex-col justify-center px-[var(--gutter)] pt-[var(--nav-h)]">
       <h1 className="display max-w-[14ch] text-[clamp(2.8rem,7vw,6rem)]">Seu pedido ainda está vazio</h1>
       <p className="mt-6 max-w-[48ch] text-lg text-cenere">Escolha uma pizza no cardápio e ela aparece aqui para você finalizar.</p>
       <div className="mt-10">
-        <Link href="/#cardapio" className="inline-flex h-14 items-center rounded-full bg-brasa px-8 font-medium text-farinha transition-colors hover:bg-pomodoro">
+        <ExitLink to="/#cardapio" onExit={onExit} className="inline-flex h-14 items-center rounded-full bg-brasa px-8 font-medium text-farinha transition-colors hover:bg-pomodoro">
           Ver o cardápio
-        </Link>
+        </ExitLink>
       </div>
     </div>
   );

@@ -12,9 +12,11 @@ type UIState = {
   toast: Toast | null;
   /** Incrementa a cada adição para o botão do carrinho reagir. */
   bump: number;
+  /** Modo página única: checkout aberto por cima da página. */
+  checkoutOpen: boolean;
 };
 
-let state: UIState = { cartOpen: false, customizing: null, toast: null, bump: 0 };
+let state: UIState = { cartOpen: false, customizing: null, toast: null, bump: 0, checkoutOpen: false };
 const listeners = new Set<() => void>();
 const set = (patch: Partial<UIState>) => {
   state = { ...state, ...patch };
@@ -24,7 +26,7 @@ const subscribe = (l: () => void) => {
   listeners.add(l);
   return () => listeners.delete(l);
 };
-const server: UIState = { cartOpen: false, customizing: null, toast: null, bump: 0 };
+const server: UIState = { cartOpen: false, customizing: null, toast: null, bump: 0, checkoutOpen: false };
 
 export function useUI() {
   return useSyncExternalStore(subscribe, () => state, () => server);
@@ -32,6 +34,12 @@ export function useUI() {
 
 export const openCart = () => set({ cartOpen: true });
 export const closeCart = () => set({ cartOpen: false });
+export const openCheckout = () => set({ checkoutOpen: true, cartOpen: false });
+/** Fecha o checkout sobreposto e, se pedido, rola até uma seção da página. */
+export function closeCheckout(hash?: string) {
+  set({ checkoutOpen: false });
+  if (hash) setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: "smooth" }), 80);
+}
 export const setCartOpen = (cartOpen: boolean) => set({ cartOpen });
 
 export const openCustomizer = (productId: string, editKey?: string, origin?: DOMRect | null) =>

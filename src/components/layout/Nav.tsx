@@ -11,13 +11,14 @@ import { itemCount, useCart } from "@/lib/cart";
 import { openCart, useUI } from "@/lib/ui";
 import { site } from "@/data/site";
 import { navLinks } from "@/data/nav";
+import { SINGLE_PAGE } from "@/lib/preview";
 
 
 type Theme = "dark" | "light" | "red";
 
 export function Nav() {
   const pathname = usePathname();
-  const isHome = pathname === "/";
+  const isHome = SINGLE_PAGE || pathname === "/";
   const href = (id: string) => (isHome ? `#${id}` : `/#${id}`);
   const [theme, setTheme] = useState<Theme>("dark");
   const [solid, setSolid] = useState(false);
@@ -105,7 +106,7 @@ export function Nav() {
         data-hero-nav
       >
         <nav aria-label="Principal" className="mx-auto mt-[env(safe-area-inset-top)] flex h-[var(--nav-h)] max-w-[1600px] items-center justify-between gap-6 px-[var(--gutter)]">
-          <Link href="/" aria-label={`${site.name} — início`} className="rounded-sm text-[0.95rem]" data-hero-item>
+          <Link href={SINGLE_PAGE ? "#inicio" : "/"} aria-label={`${site.name} — início`} className="rounded-sm text-[0.95rem]" data-hero-item>
             <Logo animated />
           </Link>
 

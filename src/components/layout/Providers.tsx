@@ -4,10 +4,12 @@ import { LazyMotion, MotionConfig } from "motion/react";
 import dynamic from "next/dynamic";
 import { Nav } from "./Nav";
 import { AddedToast } from "@/components/cart/AddedToast";
+import { SINGLE_PAGE } from "@/lib/preview";
 
 // Carregados só quando necessários: não pesam no primeiro carregamento
 const CartDrawer = dynamic(() => import("@/components/cart/CartDrawer").then((m) => m.CartDrawer), { ssr: false });
 const Customizer = dynamic(() => import("@/components/cart/Customizer").then((m) => m.Customizer), { ssr: false });
+const CheckoutOverlay = dynamic(() => import("@/components/checkout/CheckoutOverlay").then((m) => m.CheckoutOverlay), { ssr: false });
 
 const loadFeatures = () => import("@/lib/motion-features").then((r) => r.default);
 
@@ -21,6 +23,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       {children}
       <CartDrawer />
       <Customizer />
+      {SINGLE_PAGE && <CheckoutOverlay />}
       <AddedToast />
     </MotionConfig>
     </LazyMotion>

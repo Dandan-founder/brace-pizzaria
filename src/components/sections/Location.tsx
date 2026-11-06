@@ -7,6 +7,7 @@ import { ButtonLink } from "@/components/ui/Button";
 import { OpenStatus } from "@/components/ui/OpenStatus";
 import { site, weekdayNames } from "@/data/site";
 import { formatRange, nowInShop } from "@/lib/hours";
+import { SINGLE_PAGE } from "@/lib/preview";
 
 const mapsSearch = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(site.mapQuery)}`;
 const mapsDirections = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(site.mapQuery)}`;
@@ -84,13 +85,13 @@ export function Location() {
               <p className="mt-1">{site.address.street}, {site.address.city}</p>
             </div>
           </div>
-          <iframe
+          {!SINGLE_PAGE && <iframe
             title={`Mapa: ${site.legalName}, ${site.address.district}`}
             src={mapsEmbed}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             className="absolute inset-0 h-full w-full border-0 [filter:grayscale(.85)_sepia(.25)_contrast(1.05)]"
-          />
+          />}
         </div>
       </Wrap>
     </Chapter>

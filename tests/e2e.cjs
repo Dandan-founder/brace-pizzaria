@@ -116,7 +116,7 @@ const assert = (c, m) => { if (!c) throw new Error('FALHOU: ' + m); console.log(
   console.log('---- mensagem ----\n' + msg + '\n------------------');
   assert(msg.includes('2x *Diavola*') && msg.includes('+ Burrata inteira') && msg.includes('sem mel de pimenta'), 'mensagem tem itens e personalização');
   assert(msg.includes('*Total: R$ 240,90*') && msg.includes('troco para R$ 300'), 'mensagem tem total e troco');
-  assert(await p.getByRole('heading', { name: 'Seu pedido está no WhatsApp' }).isVisible(), 'tela de confirmação');
+  assert(await p.getByRole('heading', { name: 'Seu pedido está pronto' }).isVisible(), 'tela de confirmação');
   if (process.argv[2]) await p.screenshot({ path: process.argv[2] + '/e2e-sent.png' });
   console.log(errs.length ? 'ERROS:\n' + JSON.stringify(errs, null, 1) : 'sem erros no console');
   await b.close();

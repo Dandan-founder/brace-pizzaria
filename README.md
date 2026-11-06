@@ -83,6 +83,8 @@ scripts/               otimização de imagens, recorte da pizza do hero, imagem
   depende do JavaScript para ficar visível.
 - **Botão de pausa** para as animações contínuas do hero (WCAG 2.2.2).
 - Celular: menos ingredientes e brasas, sem parallax de mouse; animações fora da tela ficam pausadas.
+- **Modo página única** (`NEXT_PUBLIC_SINGLE_PAGE=1 npm run build`): para prévias em visualizadores que não
+  trocam de rota nem embutem sites (checkout por cima da página, links por âncora, mapa vira endereço com links).
 - Imagens AVIF/WebP responsivas com dimensões reservadas (CLS ≈ 0); entrada da pizza do hero em CSS
   (aparece na primeira pintura).
 

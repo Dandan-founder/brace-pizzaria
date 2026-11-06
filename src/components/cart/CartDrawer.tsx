@@ -12,7 +12,8 @@ import { comboById, extraById } from "@/data/menu";
 import { addProduct, itemCount, lineImage, lineName, lineTotal, removeWithUndo, subtotal, updateQty, useCart, type CartLine } from "@/lib/cart";
 import { money, plural } from "@/lib/format";
 import { navigateWithTransition } from "@/lib/transition";
-import { closeCart, dismissToast, notifyRemoved, openCustomizer, setCartOpen, useUI } from "@/lib/ui";
+import { closeCart, dismissToast, notifyRemoved, openCheckout, openCustomizer, setCartOpen, useUI } from "@/lib/ui";
+import { SINGLE_PAGE } from "@/lib/preview";
 
 export function CartDrawer() {
   const { cartOpen, toast } = useUI();
@@ -21,6 +22,7 @@ export function CartDrawer() {
   const count = itemCount(lines);
 
   const checkout = () => {
+    if (SINGLE_PAGE) return openCheckout();
     closeCart();
     navigateWithTransition(() => router.push("/pedido/"), "/pedido/");
   };
@@ -190,7 +192,7 @@ function EmptyCart() {
         >
           Adicionar Margherita
         </Button>
-        <Link href="/#cardapio" onClick={closeCart} className="inline-flex h-12 items-center rounded-full border border-forno/25 px-6 hover:border-forno">
+        <Link href={SINGLE_PAGE ? "#cardapio" : "/#cardapio"} onClick={closeCart} className="inline-flex h-12 items-center rounded-full border border-forno/25 px-6 hover:border-forno">
           Ver cardápio
         </Link>
       </div>
