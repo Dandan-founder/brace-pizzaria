@@ -1,4 +1,5 @@
 import images from "@/data/images.json";
+import { WEBP_ONLY } from "@/lib/preview";
 
 type ImageKey = keyof typeof images;
 
@@ -27,7 +28,7 @@ export function Picture({ name, alt, sizes, className, imgClassName, priority, p
   const set = (ext: string) => meta.widths.map((w) => `/images/${name}-${w}.${ext} ${w}w`).join(", ");
   return (
     <picture className={className} style={{ ...(placeholder && !meta.alpha ? { backgroundColor: meta.color } : {}), ...style }}>
-      <source type="image/avif" srcSet={set("avif")} sizes={sizes} />
+      {!WEBP_ONLY && <source type="image/avif" srcSet={set("avif")} sizes={sizes} />}
       <source type="image/webp" srcSet={set("webp")} sizes={sizes} />
       <img
         src={`/images/${name}-${largest}.webp`}

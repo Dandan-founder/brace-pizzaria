@@ -5,3 +5,6 @@
  * mapa do Google dá lugar ao endereço com links. O site normal não usa este modo.
  */
 export const SINGLE_PAGE = process.env.NEXT_PUBLIC_SINGLE_PAGE === "1";
+
+/** Na prévia, só WebP: o compartilhamento público de artefatos aceita JPEG, PNG, GIF ou WebP (não AVIF). */
+export const WEBP_ONLY = SINGLE_PAGE;
