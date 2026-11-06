@@ -1,0 +1,226 @@
+{
+  "hero-pizza": {
+    "widths": [
+      480,
+      720,
+      960,
+      1374
+    ],
+    "ratio": 1,
+    "alpha": true,
+    "color": "rgb(24 24 24)"
+  },
+  "flour": {
+    "widths": [
+      900,
+      1600
+    ],
+    "ratio": 2.1052631578947367,
+    "alpha": false,
+    "color": "rgb(24 24 24)"
+  },
+  "oven": {
+    "widths": [
+      640,
+      1200,
+      2000
+    ],
+    "ratio": 1.5,
+    "alpha": false,
+    "color": "rgb(8 8 8)"
+  },
+  "chef": {
+    "widths": [
+      480,
+      900,
+      1400
+    ],
+    "ratio": 0.8,
+    "alpha": false,
+    "color": "rgb(24 8 8)"
+  },
+  "interior": {
+    "widths": [
+      640,
+      1200,
+      2000
+    ],
+    "ratio": 1.5,
+    "alpha": false,
+    "color": "rgb(8 8 8)"
+  },
+  "table": {
+    "widths": [
+      480,
+      900
+    ],
+    "ratio": 0.8,
+    "alpha": false,
+    "color": "rgb(8 8 8)"
+  },
+  "wine": {
+    "widths": [
+      480,
+      900
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(152 152 136)"
+  },
+  "filante": {
+    "widths": [
+      480,
+      900,
+      1400
+    ],
+    "ratio": 0.8,
+    "alpha": false,
+    "color": "rgb(8 8 8)"
+  },
+  "slice": {
+    "widths": [
+      480,
+      900,
+      1400
+    ],
+    "ratio": 0.8,
+    "alpha": false,
+    "color": "rgb(8 8 8)"
+  },
+  "share": {
+    "widths": [
+      640,
+      1200,
+      2000
+    ],
+    "ratio": 1.5,
+    "alpha": false,
+    "color": "rgb(216 216 216)"
+  },
+  "paddle": {
+    "widths": [
+      480,
+      900,
+      1400
+    ],
+    "ratio": 0.8,
+    "alpha": false,
+    "color": "rgb(8 8 8)"
+  },
+  "tomatoes": {
+    "widths": [
+      480,
+      900
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(8 8 8)"
+  },
+  "oil": {
+    "widths": [
+      480,
+      900
+    ],
+    "ratio": 0.8,
+    "alpha": false,
+    "color": "rgb(8 8 8)"
+  },
+  "parmesan": {
+    "widths": [
+      480,
+      900
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(248 248 248)"
+  },
+  "bread": {
+    "widths": [
+      480,
+      900
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(232 232 232)"
+  },
+  "margherita": {
+    "widths": [
+      400,
+      720,
+      1100
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(8 8 8)"
+  },
+  "bianca": {
+    "widths": [
+      400,
+      720,
+      1100
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(216 216 216)"
+  },
+  "spinaci": {
+    "widths": [
+      400,
+      720,
+      1100
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(24 24 24)"
+  },
+  "diavola": {
+    "widths": [
+      400,
+      720,
+      1100
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(8 8 8)"
+  },
+  "rustica": {
+    "widths": [
+      400,
+      720,
+      1100
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(40 24 8)"
+  },
+  "tagliere": {
+    "widths": [
+      400,
+      720,
+      1100
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(40 24 24)"
+  },
+  "funghi": {
+    "widths": [
+      400,
+      720,
+      1100
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(88 56 40)"
+  },
+  "capricciosa": {
+    "widths": [
+      400,
+      720,
+      1100
+    ],
+    "ratio": 1,
+    "alpha": false,
+    "color": "rgb(40 24 8)"
+  }
+}

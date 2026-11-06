@@ -1,26 +1,225 @@
 @import "tailwindcss";
 
+/* ───────────────────────── 1. Primitivos ───────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --forno: #0e0c0a;
+  --forno-2: #1a1613;
+  --forno-3: #2a231e;
+  --brasa: #8e1b1b;
+  --brasa-deep: #6e1414;
+  --pomodoro: #b3261e;
+  --farinha: #f3e9d7;
+  --farinha-2: #e9dcc4;
+  --farinha-3: #dccbad;
+  --olio: #b8913f;
+  --olio-light: #d6b878;
+  --cenere: #3a332d;
+  --cenere-light: #6b6058;
+
+  /* Curvas (MOTION.md) */
+  --ease-brasa: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-ui: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-soft: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-soft: cubic-bezier(0.4, 0, 1, 1);
+  --dur-ui: 180ms;
+  --dur-micro: 260ms;
+  --dur-reveal: 700ms;
+
+  /* Layout */
+  --gutter: clamp(1rem, 4vw, 4rem);
+  --nav-h: 4.5rem;
 }
 
+/* ───────────────────────── 2. Semânticos (via Tailwind) ───────────────────────── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-forno: var(--forno);
+  --color-forno-2: var(--forno-2);
+  --color-forno-3: var(--forno-3);
+  --color-brasa: var(--brasa);
+  --color-brasa-deep: var(--brasa-deep);
+  --color-pomodoro: var(--pomodoro);
+  --color-farinha: var(--farinha);
+  --color-farinha-2: var(--farinha-2);
+  --color-farinha-3: var(--farinha-3);
+  --color-olio: var(--olio);
+  --color-olio-light: var(--olio-light);
+  --color-cenere: var(--cenere);
+  --color-cenere-light: var(--cenere-light);
+
+  --font-display: var(--font-bodoni), "Bodoni 72", "Didot", Georgia, serif;
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+
+  --ease-brasa: var(--ease-brasa);
+  --ease-ui: var(--ease-ui);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ───────────────────────── Base ───────────────────────── */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--nav-h);
+  -webkit-text-size-adjust: 100%;
+  background: var(--forno);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--forno);
+  color: var(--farinha);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+a,
+button,
+input,
+label,
+textarea,
+[role="button"],
+[role="tab"],
+[role="radio"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Pausa das animações decorativas do hero (botão de pausa, WCAG 2.2.2) */
+[data-paused] .ember,
+[data-paused] [data-scroll-cue] {
+  animation-play-state: paused !important;
+}
+
+::selection {
+  background: var(--brasa);
+  color: var(--farinha);
+}
+
+:focus-visible {
+  outline: 2px solid var(--olio-light);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.on-light :focus-visible,
+.on-light:focus-visible {
+  outline-color: var(--brasa);
+}
+
+/* Título display: Bodoni em tamanho óptico alto, sem tracking exagerado */
+.display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 500;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Folga nas máscaras do SplitText: serifas e acentos do Bodoni não são cortados */
+[data-split] > div,
+[data-hero-title] > div {
+  padding: 0.04em 0.12em 0.12em;
+  margin: -0.04em -0.12em -0.12em;
+}
+
+.prose-measure {
+  max-width: 62ch;
+}
+
+/* Grão de filme sutil sobre capítulos escuros (SVG inline, sem requisição) */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Linha fina em ouro usada como divisor de capítulos */
+.hairline {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklch, var(--olio) 70%, transparent) 20%,
+    color-mix(in oklch, var(--olio) 70%, transparent) 80%,
+    transparent
+  );
+}
+
+/* ───────────────────────── Estados de animação ─────────────────────────
+   O conteúdo nasce visível. Só quando o JS confirma que o movimento é bem-vindo
+   (classe .motion-ok no <html>, aplicada antes da pintura) os elementos começam escondidos
+   para o GSAP revelá-los. Sem JS ou com movimento reduzido, tudo aparece pronto. */
+.motion-ok [data-reveal] {
+  opacity: 0;
+}
+.motion-ok [data-reveal="mask"] {
+  opacity: 1;
+  clip-path: inset(100% 0 0 0);
+}
+.motion-ok [data-hero-hide] {
+  visibility: hidden;
+}
+
+/* Entrada da pizza do hero em CSS puro: começa na primeira pintura, sem esperar o JavaScript
+   (a foto é o maior elemento da tela, o LCP). Só transform: a pizza nunca fica invisível. */
+@keyframes pizza-in {
+  from {
+    transform: scale(0.8) rotate(-70deg);
+  }
+  to {
+    transform: none;
+  }
+}
+.motion-ok [data-pizza-enter] {
+  animation: pizza-in 2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+/* Giro contínuo da pizza no celular (CSS é mais barato que JS) */
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Transições de página (View Transitions API) — cortina de brasa */
+@keyframes vt-curtain-in {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+    transform: translateY(-2%);
+  }
+}
+::view-transition-old(root) {
+  animation: vt-fade-out 420ms var(--ease-in-soft) both;
+}
+::view-transition-new(root) {
+  animation: vt-curtain-in 620ms var(--ease-brasa) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
 }

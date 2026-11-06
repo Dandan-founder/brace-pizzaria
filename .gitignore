@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# fotos originais em alta (baixe com scripts/fetch-photos.sh); só a pizza recortada fica no repositório
+/assets-src/*
+!/assets-src/hero-pizza-clean.png
