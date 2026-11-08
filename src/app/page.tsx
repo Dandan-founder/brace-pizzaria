@@ -3,6 +3,7 @@ import { Story } from "@/components/sections/Story";
 import { Menu } from "@/components/sections/Menu";
 import { BestSellers } from "@/components/sections/BestSellers";
 import { Ingredients } from "@/components/sections/Ingredients";
+import { Forno } from "@/components/sections/Forno";
 import { Offers } from "@/components/sections/Offers";
 import { Gallery } from "@/components/sections/Gallery";
 import { Location } from "@/components/sections/Location";
@@ -18,6 +19,7 @@ export default function Home() {
         <Menu />
         <BestSellers />
         <Ingredients />
+        <Forno />
         <Offers />
         <Gallery />
         <Location />
