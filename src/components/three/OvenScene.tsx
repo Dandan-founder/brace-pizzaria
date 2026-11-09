@@ -94,7 +94,7 @@ function Dome() {
     c.height = H;
     const g = c.getContext("2d")!;
     const img = g.createImageData(W, H);
-    const r = R - 0.08;
+    const r = R - 0.13;
     for (let py = 0; py < H; py++)
       for (let px = 0; px < W; px++) {
         // mesmo mapeamento UV da SphereGeometry (thetaLength = π/2)
@@ -121,7 +121,7 @@ function Dome() {
         <meshStandardMaterial roughness={0.82} metalness={0} />
       </instancedMesh>
       <mesh>
-        <sphereGeometry args={[R - 0.08, 96, 48, 0, Math.PI * 2, 0, Math.PI / 2]} />
+        <sphereGeometry args={[R - 0.13, 96, 48, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial color="#6b5a4c" roughness={1} alphaMap={mortarAlpha} alphaTest={0.5} />
       </mesh>
       {/* topo da cúpula */}
@@ -137,11 +137,12 @@ function Dome() {
 function Interior() {
   return (
     <group>
-      <mesh>
+      {/* girada para a emenda da esfera ficar na frente (escondida), não no fundo visto pela boca */}
+      <mesh rotation={[0, Math.PI / 2, 0]}>
         <sphereGeometry args={[R - 0.3, 64, 32, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <meshStandardMaterial color="#6a3020" roughness={0.95} side={THREE.BackSide} emissive="#5a1606" emissiveIntensity={0.9} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.035, 0]}>
         <circleGeometry args={[R - 0.28, 48]} />
         <meshStandardMaterial color="#3b2a22" roughness={1} />
       </mesh>
@@ -164,15 +165,15 @@ function Interior() {
 function Base() {
   return (
     <group>
-      <mesh position={[0, -0.7, 0]}>
-        <boxGeometry args={[5.2, 1.4, 4.8]} />
+      <mesh position={[0, -0.76, 0]}>
+        <boxGeometry args={[5.2, 1.32, 4.8]} />
         <meshStandardMaterial color="#26201c" roughness={0.95} />
       </mesh>
       <mesh position={[0, -0.04, 0.15]}>
         <boxGeometry args={[5.5, 0.08, 5.3]} />
         <meshStandardMaterial color="#4a413a" roughness={0.75} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.4, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.43, 0]}>
         <planeGeometry args={[60, 60]} />
         <meshStandardMaterial color="#0e0c0a" roughness={1} />
       </mesh>
@@ -198,7 +199,7 @@ const fireVertex = /* glsl */ `
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     gl_Position = projectionMatrix * mv;
     float size = (1.0 - life * 0.7) * (1.1 + 1.1 * uHeat);
-    gl_PointSize = size * uPixel / -mv.z;
+    gl_PointSize = min(size * uPixel / -mv.z, 90.0);
   }
 `;
 const fireFragment = /* glsl */ `
@@ -208,13 +209,14 @@ const fireFragment = /* glsl */ `
   void main() {
     vec2 c = gl_PointCoord - 0.5;
     float d = length(c);
-    float a = smoothstep(0.5, 0.0, d);
-    vec3 hot = vec3(1.0, 0.5, 0.14);
-    vec3 mid = vec3(0.9, 0.16, 0.02);
+    float a = 1.0 - smoothstep(0.0, 0.5, d);
+    if (d > 0.5) discard;
+    vec3 hot = vec3(1.0, 0.36, 0.07);
+    vec3 mid = vec3(0.85, 0.12, 0.02);
     vec3 cold = vec3(0.5, 0.05, 0.01);
     vec3 col = mix(hot, mid, smoothstep(0.0, 0.45, vLife));
     col = mix(col, cold, smoothstep(0.45, 1.0, vLife));
-    gl_FragColor = vec4(col * (0.55 + uHeat * 0.4), a * a * (1.0 - vLife) * 0.38);
+    gl_FragColor = vec4(col * (0.5 + uHeat * 0.3), a * a * (1.0 - vLife) * 0.32);
   }
 `;
 
@@ -293,7 +295,8 @@ function Rig({ progress, animate }: { progress: { current: number }; animate: bo
 
   useEffect(() => {
     // tamanho dos pontos proporcional à altura do canvas em pixels de tela
-    uniforms.uPixel.value = size.height * gl.getPixelRatio() * 0.9;
+    // proporcional à tela, mas menor no retrato (celular), onde a câmera fica mais longe
+    uniforms.uPixel.value = Math.min(size.height, size.width * 1.4) * gl.getPixelRatio() * 0.75;
     // no retrato (celular) a câmera recua para o forno caber
     const portrait = size.width / size.height < 0.9;
     from.pos.set(portrait ? 3.6 : 4.2, portrait ? 3.4 : 2.9, portrait ? 12.5 : 8.6);
@@ -330,7 +333,7 @@ export default function OvenScene({ progress, active, reduced }: { progress: { c
     <Canvas
       frameloop={active && !reduced ? "always" : "demand"}
       dpr={[1, 1.6]}
-      camera={{ position: [4.2, 2.9, 8.6], fov: 34, near: 0.1, far: 60 }}
+      camera={{ position: [4.2, 2.9, 8.6], fov: 34, near: 0.6, far: 40 }}
       gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
       onCreated={({ gl, scene }) => {
         gl.toneMapping = THREE.ACESFilmicToneMapping;
@@ -343,6 +346,8 @@ export default function OvenScene({ progress, active, reduced }: { progress: { c
       <hemisphereLight args={["#5a5560", "#1a1210", 0.55]} />
       <directionalLight position={[-6, 7, 5]} intensity={1.7} color="#f3e2c7" />
       <directionalLight position={[5, 3, -6]} intensity={0.7} color="#6f7fa0" />
+      <directionalLight position={[7, 2.5, 6]} intensity={0.55} color="#c98a5a" />
+      <ambientLight intensity={0.12} color="#b07a55" />
       <Base />
       <Interior />
       <Dome />
