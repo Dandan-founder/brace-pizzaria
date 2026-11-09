@@ -223,3 +223,11 @@ textarea,
     animation: none;
   }
 }
+
+/* brilho da boca do forno (versão pré-renderizada) */
+@keyframes oven-flicker {
+  0%, 100% { opacity: 0.75; transform: translate(-50%, -50%) scale(1); }
+  30% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
+  55% { opacity: 0.6; transform: translate(-50%, -50%) scale(0.97); }
+  80% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.03); }
+}

@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { EffectComposer, Bloom, ToneMapping } from "@react-three/postprocessing";
 import { ToneMappingMode } from "postprocessing";
 import { brickTextures, contactShadow, mortarTexture, stoneTextures } from "./textures";
+import { FrameGuard, Ticker } from "./FrameControl";
 
 /**
  * Forno a lenha em 3D, todo procedural (sem modelos externos):
@@ -273,10 +274,10 @@ const rand = (i: number, k: number) => {
   return s - Math.floor(s);
 };
 
-function Fire({ heat, uniforms }: { heat: { current: number }; uniforms: { uTime: { value: number }; uHeat: { value: number }; uPixel: { value: number } } }) {
-  const flameSeeds = useMemo(() => seeds(360, (i) => [(rand(i, 1) - 0.5) * 1.3, -0.8 + (rand(i, 2) - 0.5) * 0.45, rand(i, 3), 0.5 + rand(i, 4) * 0.55]), []);
+function Fire({ heat, uniforms, count = 360 }: { heat: { current: number }; uniforms: { uTime: { value: number }; uHeat: { value: number }; uPixel: { value: number } }; count?: number }) {
+  const flameSeeds = useMemo(() => seeds(count, (i) => [(rand(i, 1) - 0.5) * 1.3, -0.8 + (rand(i, 2) - 0.5) * 0.45, rand(i, 3), 0.5 + rand(i, 4) * 0.55]), [count]);
   const emberSeeds = useMemo(() => seeds(70, (i) => [(rand(i, 5) - 0.5) * 1.2, (rand(i, 6) - 0.5) * 0.6, rand(i, 7), 0.08 + rand(i, 8) * 0.1]), []);
-  const positions = useMemo(() => new Float32Array(360 * 3).fill(0), []);
+  const positions = useMemo(() => new Float32Array(count * 3).fill(0), [count]);
   const emberPositions = useMemo(() => new Float32Array(70 * 3).fill(0), []);
   void heat;
   return (
@@ -299,7 +300,7 @@ function Fire({ heat, uniforms }: { heat: { current: number }; uniforms: { uTime
   );
 }
 
-function Rig({ progress, animate }: { progress: { current: number }; animate: boolean }) {
+function Rig({ progress, animate, flames }: { progress: { current: number }; animate: boolean; flames: number }) {
   const { camera, size, gl } = useThree();
   const inner = useRef<THREE.PointLight>(null);
   const mouth = useRef<THREE.PointLight>(null);
@@ -340,16 +341,17 @@ function Rig({ progress, animate }: { progress: { current: number }; animate: bo
     <>
       <pointLight ref={inner} position={[0, 1.05, 0.15]} color="#ff6a1f" distance={5} decay={1.6} />
       <pointLight ref={mouth} position={[0, 0.5, R + 0.6]} color="#ff8c3a" distance={5.5} decay={1.8} />
-      <Fire heat={heat} uniforms={uniforms} />
+      <Fire heat={heat} uniforms={uniforms} count={flames} />
     </>
   );
 }
 
-export default function OvenScene({ progress, active, reduced }: { progress: { current: number }; active: boolean; reduced: boolean }) {
+export default function OvenScene({ progress, active, reduced, tier = "high", onSlow }: { progress: { current: number }; active: boolean; reduced: boolean; tier?: "high" | "medium"; onSlow?: () => void }) {
   return (
     <Canvas
-      frameloop={active && !reduced ? "always" : "demand"}
-      dpr={[1, 1.6]}
+      // Quadros sob demanda: o Ticker pede ~30 fps só enquanto a seção está na tela
+      frameloop="demand"
+      dpr={tier === "high" ? [1, 1.4] : 1}
       camera={{ position: [4.2, 2.9, 8.6], fov: 34, near: 0.6, far: 40 }}
       gl={{ antialias: true, alpha: false, powerPreference: "high-performance" }}
       onCreated={({ gl, scene }) => {
@@ -368,9 +370,11 @@ export default function OvenScene({ progress, active, reduced }: { progress: { c
       <Base />
       <Interior />
       <Dome />
-      <Rig progress={progress} animate={!reduced} />
+      <Rig progress={progress} animate={!reduced} flames={tier === "high" ? 360 : 170} />
+      <Ticker running={active && !reduced} />
+      <FrameGuard onSlow={onSlow} />
       {/* Brilho real do fogo (bloom) só em telas grandes; no celular fica de fora para não pesar */}
-      {typeof window !== "undefined" && window.innerWidth >= 768 && (
+      {tier === "high" && (
         <EffectComposer multisampling={4}>
           <Bloom mipmapBlur intensity={0.85} luminanceThreshold={0.55} luminanceSmoothing={0.25} radius={0.7} />
           <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />

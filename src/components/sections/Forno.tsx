@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import { MQ, ScrollTrigger, useGsap } from "@/lib/gsap";
-import { hasWebGL, SceneBoundary, useInView } from "@/components/three/Lazy3D";
+import { detectTier, lowerTier, SceneBoundary, useInView, type Tier } from "@/components/three/Lazy3D";
 
 const OvenScene = dynamic(() => import("@/components/three/OvenScene"), { ssr: false, loading: () => <OvenFallback /> });
 
@@ -32,9 +32,11 @@ export function Forno() {
   const temp = useRef<HTMLSpanElement>(null);
   const [beat, setBeat] = useState(0);
   const [reduced, setReduced] = useState(false);
-  const [webgl, setWebgl] = useState<boolean | null>(null);
+  // Nível de 3D conforme o aparelho; a própria cena rebaixa se começar a travar
+  const [tier, setTier] = useState<Tier | null>(null);
+  const poster = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    setWebgl(hasWebGL());
+    setTier(detectTier());
     const mq = window.matchMedia(MQ.reduce);
     setReduced(mq.matches);
     const on = () => setReduced(mq.matches);
@@ -52,6 +54,7 @@ export function Forno() {
         onUpdate: (self) => {
           const p = self.progress;
           progress.current = p;
+          poster.current?.style.setProperty("--p", p.toFixed(3));
           setBeat(Math.min(beats.length - 1, Math.floor(p * beats.length * 0.999)));
           if (temp.current) temp.current.textContent = String(Math.round(180 + p * 305));
         },
@@ -61,9 +64,22 @@ export function Forno() {
 
   const stage = (
     <div className="absolute inset-0">
-      {near && webgl ? (
+      {tier === "poster" ? (
+        // Aparelho sem fôlego para 3D ao vivo: o mesmo forno pré-renderizado (de longe e de perto),
+        // com aproximação e troca guiadas pela rolagem — só transform/opacity, sempre liso.
+        <div ref={poster} aria-hidden className="absolute inset-0 overflow-hidden bg-forno" style={{ ["--p" as string]: reduced ? "0.6" : "0" }}>
+          <picture>
+            <source media="(max-width: 767px)" srcSet="/images/oven-m-far.webp" />
+            <img src="/images/oven-d-far.webp" alt="" className="absolute inset-0 h-full w-full object-cover will-change-transform" style={{ transform: "scale(calc(1 + var(--p) * 0.5))", transformOrigin: "52% 62%" }} />
+          </picture>
+          <picture>
+            <source media="(max-width: 767px)" srcSet="/images/oven-m-near.webp" />
+            <img src="/images/oven-d-near.webp" alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover will-change-transform" style={{ opacity: "clamp(0, calc((var(--p) - 0.5) * 9), 1)", transform: "scale(calc(1.12 - var(--p) * 0.12))", transformOrigin: "50% 55%" }} />
+          </picture>
+        </div>
+      ) : near && tier ? (
         <SceneBoundary fallback={<OvenFallback />}>
-          <OvenScene progress={progress} active={visible} reduced={reduced} />
+          <OvenScene progress={progress} active={visible} reduced={reduced} tier={tier} onSlow={() => setTier((t) => (t ? lowerTier(t) : t))} />
         </SceneBoundary>
       ) : (
         <OvenFallback />

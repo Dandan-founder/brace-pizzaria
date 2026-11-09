@@ -44,3 +44,32 @@ export function useInView<T extends HTMLElement>() {
   }, []);
   return { ref, near, visible };
 }
+
+/**
+ * Nível de 3D para este aparelho:
+ * - "poster": sem placa de vídeo (renderização por software), economia de dados ou pouca memória → imagem pré-renderizada
+ * - "medium": celular/tela de toque → 3D simplificado (resolução 1x, sem efeitos caros)
+ * - "high": computador → 3D completo
+ * Em qualquer nível, o FrameGuard rebaixa sozinho se o 3D começar a travar.
+ */
+export type Tier = "high" | "medium" | "poster";
+
+export function detectTier(): Tier {
+  try {
+    const c = document.createElement("canvas");
+    const gl = (c.getContext("webgl2") || c.getContext("webgl")) as WebGLRenderingContext | null;
+    if (!gl) return "poster";
+    const dbg = gl.getExtension("WEBGL_debug_renderer_info");
+    const renderer = dbg ? String(gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL)) : "";
+    gl.getExtension("WEBGL_lose_context")?.loseContext();
+    if (/swiftshader|llvmpipe|software|basic render/i.test(renderer)) return "poster";
+  } catch {
+    return "poster";
+  }
+  const nav = navigator as Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
+  if (nav.connection?.saveData) return "poster";
+  if ((nav.deviceMemory ?? 8) <= 2) return "poster";
+  return window.matchMedia("(max-width: 767px), (pointer: coarse)").matches ? "medium" : "high";
+}
+
+export const lowerTier = (t: Tier): Tier => (t === "high" ? "medium" : "poster");
