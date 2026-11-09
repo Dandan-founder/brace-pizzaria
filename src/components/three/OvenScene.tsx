@@ -3,6 +3,9 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
+import { EffectComposer, Bloom, ToneMapping } from "@react-three/postprocessing";
+import { ToneMappingMode } from "postprocessing";
+import { brickTextures, contactShadow, mortarTexture, stoneTextures } from "./textures";
 
 /**
  * Forno a lenha em 3D, todo procedural (sem modelos externos):
@@ -114,15 +117,20 @@ function Dome() {
     return t;
   }, []);
 
+  // Tijolo com relevo (bordas gastas, poros, lascas) e argamassa granulada, gerados em canvas
+  const brick = useMemo(() => brickTextures(), []);
+  const mortar = useMemo(() => mortarTexture(), []);
+  const normalScale = useMemo(() => new THREE.Vector2(1.1, 1.1), []);
+
   return (
     <group>
       <instancedMesh ref={ref} args={[undefined, undefined, bricks.length]} castShadow={false}>
         <boxGeometry />
-        <meshStandardMaterial roughness={0.82} metalness={0} />
+        <meshStandardMaterial map={brick.map} normalMap={brick.normalMap} normalScale={normalScale} roughness={0.86} metalness={0} />
       </instancedMesh>
       <mesh>
         <sphereGeometry args={[R - 0.13, 96, 48, 0, Math.PI * 2, 0, Math.PI / 2]} />
-        <meshStandardMaterial color="#6b5a4c" roughness={1} alphaMap={mortarAlpha} alphaTest={0.5} />
+        <meshStandardMaterial map={mortar} roughness={1} alphaMap={mortarAlpha} alphaTest={0.5} />
       </mesh>
       {/* topo da cúpula */}
       <mesh position={[0, R * 0.985, 0]}>
@@ -135,6 +143,7 @@ function Dome() {
 
 /** Interior: parede de dentro (vista pela boca), piso de pedra e a lenha no fundo. */
 function Interior() {
+  const floor = useMemo(() => stoneTextures([70, 52, 42], 4), []);
   return (
     <group>
       {/* girada para a emenda da esfera ficar na frente (escondida), não no fundo visto pela boca */}
@@ -144,7 +153,7 @@ function Interior() {
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.035, 0]}>
         <circleGeometry args={[R - 0.28, 48]} />
-        <meshStandardMaterial color="#3b2a22" roughness={1} />
+        <meshStandardMaterial map={floor.map} normalMap={floor.normalMap} roughness={1} />
       </mesh>
       {[
         [-0.35, 0.09, -0.85, 0.5],
@@ -163,15 +172,23 @@ function Interior() {
 
 /** Base de alvenaria com tampo de pedra e a "boca" de apoio na frente. */
 function Base() {
+  // Alvenaria escura e tampo de granito, com relevo; sombra de contato sob a cúpula
+  const wall = useMemo(() => stoneTextures([52, 44, 38], 1), []);
+  const top = useMemo(() => stoneTextures([96, 86, 78], 2), []);
+  const shadow = useMemo(() => contactShadow(), []);
   return (
     <group>
       <mesh position={[0, -0.76, 0]}>
         <boxGeometry args={[5.2, 1.32, 4.8]} />
-        <meshStandardMaterial color="#26201c" roughness={0.95} />
+        <meshStandardMaterial map={wall.map} normalMap={wall.normalMap} roughness={0.95} />
       </mesh>
       <mesh position={[0, -0.04, 0.15]}>
         <boxGeometry args={[5.5, 0.08, 5.3]} />
-        <meshStandardMaterial color="#4a413a" roughness={0.75} />
+        <meshStandardMaterial map={top.map} normalMap={top.normalMap} roughness={0.62} metalness={0.05} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.003, 0.05]} renderOrder={1}>
+        <planeGeometry args={[R * 2.7, R * 2.7]} />
+        <meshBasicMaterial map={shadow} transparent depthWrite={false} polygonOffset polygonOffsetFactor={-2} toneMapped={false} />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1.43, 0]}>
         <planeGeometry args={[60, 60]} />
@@ -352,6 +369,13 @@ export default function OvenScene({ progress, active, reduced }: { progress: { c
       <Interior />
       <Dome />
       <Rig progress={progress} animate={!reduced} />
+      {/* Brilho real do fogo (bloom) só em telas grandes; no celular fica de fora para não pesar */}
+      {typeof window !== "undefined" && window.innerWidth >= 768 && (
+        <EffectComposer multisampling={4}>
+          <Bloom mipmapBlur intensity={0.85} luminanceThreshold={0.55} luminanceSmoothing={0.25} radius={0.7} />
+          <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+        </EffectComposer>
+      )}
     </Canvas>
   );
 }
