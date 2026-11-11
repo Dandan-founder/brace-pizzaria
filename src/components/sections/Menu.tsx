@@ -177,7 +177,7 @@ function MenuRow({ product: p, onHover }: { product: Product; onHover: (id: stri
           ref={addRef}
           type="button"
           onClick={add}
-          className="group/add inline-flex h-11 cursor-pointer items-center gap-2 rounded-full bg-brasa pl-3.5 pr-5 text-sm font-medium text-farinha transition-[background-color,transform] duration-200 hover:bg-pomodoro active:scale-[0.96]"
+          className="group/add inline-flex h-11 cursor-pointer items-center gap-2 rounded-full bg-brasa pl-3.5 pr-5 text-sm font-medium text-farinha transition-[background-color,transform,translate,rotate,scale] duration-200 hover:bg-pomodoro active:scale-[0.96]"
         >
           <Plus className="h-4 w-4 transition-transform duration-300 group-hover/add:rotate-90" aria-hidden />
           Adicionar

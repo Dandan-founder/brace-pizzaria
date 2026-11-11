@@ -34,7 +34,7 @@ export function CartDrawer() {
           <Dialog.Portal forceMount>
             <Dialog.Overlay forceMount asChild>
               <m.div
-                className="fixed inset-0 z-[65] bg-forno/60 backdrop-blur-[2px]"
+                className="fixed inset-0 z-[65] bg-forno/70"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}

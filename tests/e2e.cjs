@@ -7,7 +7,6 @@ const assert = (c, m) => { if (!c) throw new Error('FALHOU: ' + m); console.log(
   const errs = [];
   p.on('pageerror', e => errs.push(e.message));
   p.on('console', m => m.type() === 'error' && errs.push(m.text()));
-  let popupUrl = null;
   await p.addInitScript(() => { window.__opened = []; window.open = (u) => { window.__opened.push(u); return null; }; });
   await p.goto('' + (process.env.BASE_URL || 'http://localhost:4173') + '/', { waitUntil: 'networkidle' });
 

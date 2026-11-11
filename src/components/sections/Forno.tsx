@@ -129,7 +129,7 @@ export function Forno() {
                 <li
                   key={b.title}
                   aria-current={i === beat ? "step" : undefined}
-                  className={`col-start-1 row-start-1 transition-[opacity,transform] duration-700 ease-[cubic-bezier(.16,1,.3,1)] ${
+                  className={`col-start-1 row-start-1 transition-[opacity,transform,translate,rotate,scale] duration-700 ease-[cubic-bezier(.16,1,.3,1)] ${
                     i === beat ? "translate-y-0 opacity-100" : i < beat ? "-translate-y-5 opacity-0" : "translate-y-5 opacity-0"
                   }`}
                 >

@@ -20,7 +20,7 @@ export function Contact() {
               href={whatsappHello()}
               target="_blank"
               rel="noopener"
-              className="group inline-flex h-16 items-center gap-3 rounded-full bg-farinha pl-6 pr-8 text-lg font-medium text-brasa transition-[background-color,transform] duration-200 hover:bg-white active:scale-[0.97]"
+              className="group inline-flex h-16 items-center gap-3 rounded-full bg-farinha pl-6 pr-8 text-lg font-medium text-brasa transition-[background-color,transform,translate,rotate,scale] duration-200 hover:bg-white active:scale-[0.97]"
             >
               <WhatsAppIcon className="h-6 w-6 transition-transform duration-300 group-hover:-rotate-12" />
               Conversar no WhatsApp

@@ -20,7 +20,7 @@ export function Customizer() {
         {customizing && (
           <Dialog.Portal forceMount>
             <Dialog.Overlay forceMount asChild>
-              <m.div className="fixed inset-0 z-[67] bg-forno/70 backdrop-blur-[3px]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
+              <m.div className="fixed inset-0 z-[67] bg-forno/75" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} />
             </Dialog.Overlay>
             <Panel key={customizing.productId + (customizing.editKey ?? "")} productId={customizing.productId} editKey={customizing.editKey} />
           </Dialog.Portal>
@@ -171,7 +171,7 @@ function Panel({ productId, editKey }: { productId: string; editKey?: string }) 
               ref={submitRef}
               type="button"
               onClick={submit}
-              className="flex h-12 flex-1 cursor-pointer items-center justify-between gap-3 rounded-full bg-brasa px-6 font-medium text-farinha transition-[background-color,transform] duration-200 hover:bg-pomodoro active:scale-[0.98]"
+              className="flex h-12 flex-1 cursor-pointer items-center justify-between gap-3 rounded-full bg-brasa px-6 font-medium text-farinha transition-[background-color,transform,translate,rotate,scale] duration-200 hover:bg-pomodoro active:scale-[0.98]"
             >
               <span>{editing ? "Salvar" : "Adicionar"}<span className="max-[380px]:hidden">{editing ? " alterações" : " ao pedido"}</span></span>
               <AnimatedMoney value={total} />

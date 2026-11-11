@@ -60,9 +60,18 @@ export function useGsap(
   }, deps);
 }
 
+/** Primeira cor de fundo não transparente subindo pelos ancestrais (para a folha da máscara). */
+function backdropOf(el: HTMLElement) {
+  for (let n: HTMLElement | null = el.parentElement; n; n = n.parentElement) {
+    const c = getComputedStyle(n).backgroundColor;
+    if (c && c !== "transparent" && !/rgba\(.*,\s*0\)$/.test(c)) return c;
+  }
+  return getComputedStyle(document.body).backgroundColor;
+}
+
 /**
  * Revelações padrão de capítulo: elementos com [data-reveal] entram em lote quando
- * chegam à tela. "mask" abre por clip-path; o resto sobe 24px com fade.
+ * chegam à tela. "mask" abre com uma folha que sobe; o resto sobe 24px com fade.
  */
 export function revealIn(mm: gsap.MatchMedia, el: HTMLElement) {
   mm.add(MQ.motion, () => {
@@ -74,18 +83,27 @@ export function revealIn(mm: gsap.MatchMedia, el: HTMLElement) {
       onEnter: (batch) =>
         gsap.fromTo(batch, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.06, ease: "power3.out", overwrite: true }),
     });
-    masks.forEach((m) =>
-      gsap.fromTo(
-        m,
-        { clipPath: "inset(100% 0% 0% 0%)" },
-        {
-          clipPath: "inset(0% 0% 0% 0%)",
-          duration: 1,
-          ease: "expo.out",
-          scrollTrigger: { trigger: m, start: "top 85%", once: true },
-        },
-      ),
-    );
+    // Máscara feita só com transform: uma folha da cor do fundo cobre a foto e sobe (o clip-path do CSS
+    // segura a foto escondida só até esta folha existir; animar clip-path repintaria a cada quadro).
+    const sheets = Array.from(masks, (m) => {
+      const sheet = document.createElement("span");
+      sheet.setAttribute("aria-hidden", "true");
+      sheet.style.cssText = `position:absolute;inset:-1px;z-index:5;pointer-events:none;background:${backdropOf(m)}`;
+      m.appendChild(sheet);
+      m.style.clipPath = "none";
+      gsap.to(sheet, {
+        yPercent: -101,
+        duration: 1,
+        ease: "expo.out",
+        scrollTrigger: { trigger: m, start: "top 85%", once: true },
+        onComplete: () => sheet.remove(),
+      });
+      return sheet;
+    });
+    return () => {
+      sheets.forEach((s) => s.remove());
+      masks.forEach((m) => (m.style.clipPath = ""));
+    };
   });
 }
 

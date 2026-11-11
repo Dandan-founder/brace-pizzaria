@@ -14,11 +14,17 @@ const eslintConfig = [
   {
     ignores: [
       "node_modules/**",
+      ".claude/**",
       ".next/**",
       "out/**",
       "build/**",
       "next-env.d.ts",
     ],
+  },
+  {
+    // scripts de teste e de geração rodam direto no Node (CommonJS)
+    files: ["**/*.cjs"],
+    rules: { "@typescript-eslint/no-require-imports": "off" },
   },
 ];
 

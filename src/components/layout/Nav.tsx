@@ -90,16 +90,16 @@ export function Nav() {
   }, [pathname]);
 
   const palette: Record<Theme, string> = {
-    dark: solid ? "bg-forno/92 text-farinha border-farinha/10" : "bg-transparent text-farinha border-transparent",
-    light: "bg-farinha/95 text-forno border-forno/10",
-    red: "bg-brasa/95 text-farinha border-farinha/15",
+    dark: solid ? "bg-forno text-farinha border-farinha/10" : "bg-transparent text-farinha border-transparent",
+    light: "bg-farinha text-forno border-forno/10",
+    red: "bg-brasa text-farinha border-farinha/15",
   };
 
   return (
     <>
       <header
         className={[
-          "fixed inset-x-0 top-0 z-50 border-b backdrop-blur-[6px] transition-[background-color,color,border-color,transform] duration-500 ease-[var(--ease-brasa)]",
+          "fixed inset-x-0 top-0 z-50 border-b transition-[background-color,color,border-color,transform,translate,rotate,scale] duration-500 ease-[var(--ease-brasa)]",
           palette[theme],
           hidden && !menuOpen ? "-translate-y-full" : "translate-y-0",
         ].join(" ")}
@@ -133,9 +133,9 @@ export function Nav() {
                     <Dialog.Content forceMount asChild aria-describedby={undefined}>
                       <m.div
                         className="fixed inset-0 z-[60] flex flex-col bg-forno text-farinha grain"
-                        initial={{ clipPath: "inset(0 0 100% 0)" }}
-                        animate={{ clipPath: "inset(0 0 0% 0)" }}
-                        exit={{ clipPath: "inset(0 0 100% 0)" }}
+                        initial={{ y: "-100%" }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "-100%" }}
                         transition={{ duration: 0.55, ease: [0.22, 0.61, 0.36, 1] }}
                       >
                         <Dialog.Title className="sr-only">Menu</Dialog.Title>

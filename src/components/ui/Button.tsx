@@ -22,7 +22,7 @@ const sizes: Record<Size, string> = {
 export const buttonClass = (variant: Variant = "primary", size: Size = "md", extra = "") =>
   [
     "relative inline-flex select-none items-center justify-center gap-2 rounded-full font-medium tracking-[0.01em]",
-    "transition-[background-color,border-color,box-shadow,transform,color] duration-200 ease-[var(--ease-ui)]",
+    "transition-[background-color,border-color,box-shadow,transform,translate,rotate,scale,color] duration-200 ease-[var(--ease-ui)]",
     // Squash leve ao pressionar (web-motion-design: squash & stretch)
     "active:scale-[0.97] disabled:pointer-events-none disabled:opacity-45 cursor-pointer",
     variants[variant],

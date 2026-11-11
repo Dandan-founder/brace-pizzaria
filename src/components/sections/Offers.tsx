@@ -124,7 +124,7 @@ function OfferCard({ combo: c, today }: { combo: Combo; today: number | null }) 
               onClick={add}
               disabled={!availableToday}
               aria-describedby={!availableToday ? `${c.id}-indisponivel` : undefined}
-              className={`group/add inline-flex h-12 cursor-pointer items-center gap-2 rounded-full pl-4 pr-6 text-[0.95rem] font-medium transition-[background-color,transform,opacity] duration-200 active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-50 ${
+              className={`group/add inline-flex h-12 cursor-pointer items-center gap-2 rounded-full pl-4 pr-6 text-[0.95rem] font-medium transition-[background-color,transform,translate,rotate,scale,opacity] duration-200 active:scale-[0.96] disabled:cursor-not-allowed disabled:opacity-50 ${
                 look.tone === "red" ? "bg-farinha text-brasa hover:bg-white" : "bg-olio text-forno hover:bg-olio-light"
               }`}
             >
