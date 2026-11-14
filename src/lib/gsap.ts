@@ -4,10 +4,12 @@ import { useLayoutEffect, useEffect, type RefObject } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
+import { touchSafeScroll } from "./touch-scroll";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, SplitText);
   gsap.defaults({ ease: "power3.out", duration: 0.7 });
+  touchSafeScroll(gsap, ScrollTrigger); // celular/tablet: sem efeitos presos à rolagem (ver touch-scroll.ts)
 }
 
 export { gsap, ScrollTrigger, SplitText };

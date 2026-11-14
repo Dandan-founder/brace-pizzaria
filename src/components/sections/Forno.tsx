@@ -36,16 +36,20 @@ export function Forno() {
   const [tier, setTier] = useState<Tier | null>(null);
   const poster = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    setTier(detectTier());
+    // celular/tablet (toque): a seção presa com o forno girando na rolagem fica travada no dedo.
+    // Nesses aparelhos vira a lista comum (a mesma do movimento reduzido), com o forno em imagem.
+    const touch = !window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    setTier(touch ? "poster" : detectTier());
     const mq = window.matchMedia(MQ.reduce);
-    setReduced(mq.matches);
-    const on = () => setReduced(mq.matches);
+    setReduced(mq.matches || touch);
+    const on = () => setReduced(mq.matches || touch);
     mq.addEventListener("change", on);
     return () => mq.removeEventListener("change", on);
   }, []);
 
   useGsap(ref, (mm, el) => {
-    mm.add(MQ.motion, () => {
+    // só com mouse: no toque a seção vira lista parada (ver o useEffect acima)
+    mm.add("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)", () => {
       progress.current = 0;
       ScrollTrigger.create({
         trigger: el,
